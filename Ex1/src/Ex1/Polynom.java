@@ -23,7 +23,7 @@ public class Polynom implements Polynom_able{
 	 * Zero (empty polynom)
 	 */
 	public Polynom() {
-		;
+		this._Polynom=new ArrayList<Monom>();
 	}
 	/**
 	 * init a Polynom from a String such as:
@@ -34,21 +34,55 @@ public class Polynom implements Polynom_able{
 	 * convert 
 	 */
 	public Polynom(String s) {
-		int begin=0,counter=0;
-		Monom temp;
-		for(int i=0; i<s.length(); i++)
-		{
-
-			if(s.charAt(i)=='+'||s.charAt(i)=='-')//searching for +/-
-			{
-				temp=new Monom(s.substring(begin, i++));
-				_Polynom.add(temp);
-				begin= i;
+		{	
+			Polynom S_ToPolynom=new Polynom();
+			String StrLower=s.toLowerCase();
+			String plusMin="";
+			for (int i = 0; i < s.length(); i++) {
+				if(s.charAt(i)=='+'||s.charAt(i)=='-')
+				{
+					plusMin+=s.charAt(i);
+				}
 			}
-		}
-		Monom_Comperator cmpByPower=new Monom_Comperator();
-		this._Polynom.sort(cmpByPower);
+			if(s.charAt(0)!='-') plusMin="+"+plusMin;
+			String[] SplitToMonom=StrLower.split("\\+|\\-");
+			if(plusMin.charAt(0)=='-')
+			{
+			for (int i = 1; i < SplitToMonom.length; i++) {
 
+				if(plusMin.charAt(i-1)=='-')
+				{
+					Monom Temp=new Monom(SplitToMonom[i]);
+					Monom Minos=new Monom ("-1");
+					Temp.multipy(Minos);
+					S_ToPolynom.add(Temp);
+				}	
+				else 
+				{
+					Monom Temp=new Monom(SplitToMonom[i]);
+					S_ToPolynom.add(Temp);
+				}
+			}
+			}else if(plusMin.charAt(0)=='+')
+			{
+				for (int i = 0; i < SplitToMonom.length; i++) {
+
+					if(plusMin.charAt(i)=='-')
+					{
+						Monom Temp=new Monom(SplitToMonom[i]);
+						Monom Minos=new Monom ("-1");
+						Temp.multipy(Minos);
+						S_ToPolynom.add(Temp);
+					}	
+					else 
+					{
+						Monom Temp=new Monom(SplitToMonom[i]);
+						S_ToPolynom.add(Temp);
+					}
+				}
+			}
+			this._Polynom=((Polynom) S_ToPolynom.copy())._Polynom;
+		}
 	}
 	@Override
 	public double f(double x) {
@@ -124,7 +158,7 @@ public class Polynom implements Polynom_able{
 		this._Polynom=((Polynom) poly.copy())._Polynom;
 	}
 
-	
+
 	public boolean equals(Polynom_able p1) {
 		Iterator<Monom> iter1=this.iteretor();
 		Iterator<Monom> iter2=p1.iteretor();

@@ -75,6 +75,7 @@ class Functions_GUITest {
 		Polynom p2 = new Polynom(s2);
 		Polynom p3 = new Polynom(s3[0]);
 		ComplexFunction cf3 = new ComplexFunction(p3);
+		
 		for(int i=1;i<s3.length;i++) {
 			cf3.mul(new Polynom(s3[i]));
 		}

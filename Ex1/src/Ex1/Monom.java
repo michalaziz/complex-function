@@ -18,6 +18,12 @@ public class Monom implements function{
 	public static final double EPSILON = 0.0000001;
 	public static final Comparator<Monom> _Comp = new Monom_Comperator();
 	public static Comparator<Monom> getComp() {return _Comp;}
+
+	public Monom(){
+		this.set_coefficient(0);
+		this.set_power(0);
+	} 
+
 	public Monom(double a, int b){
 		this.set_coefficient(a);
 		this.set_power(b);
@@ -52,50 +58,81 @@ public class Monom implements function{
 	 * this method represent the monom class
 	 * convert string to monom devided to coeffiecient and power    
 	 */
-	public Monom(String s)
-	{
-		String str1="", str2;
-		double coef;
-		int  pow;
-
-		if(s==null)
-			throw new RuntimeException("empty");
-		if(!s.contains("x"))
-		{
-			this.set_power(0);
-			coef=Double.parseDouble(s);
-			this.set_coefficient(coef);
+	public Monom(String s) {
+		if(s.contains("(") || s.contains(")")) {
+			throw new RuntimeException("Error. Polynom cannot contains the char ( or ) ");
 		}
 		else {
-			if(s.charAt(0)=='-'&&s.charAt(1)=='x')
-				this.set_coefficient(-1);
-			else if(s.charAt(0)=='x')
-				this.set_coefficient(1);
-			else {
-			str1=s.substring(0,s.indexOf('x'));
-			coef=Double.parseDouble(str1);
-			this.set_coefficient(coef);
-			if(!s.contains("^"))
-				this.set_power(1);
-			else
-			{
-				str2=s.substring(s.indexOf('^')+1);
-				pow=Integer.parseInt(str2);	
+			Monom th = init_from_string(s);
+			this.set_coefficient(th.get_coefficient());
+			this.set_power(th.get_power());
+		}
+	}
+
+	private Monom init_from_string(String s) {
+		if(s.startsWith("+")) {
+			s = s.replaceFirst("\\+", "");
+		}
+		if(s == null) {
+			throw new RuntimeException("String is Null.");
+		}
+		s = s.replaceAll("\\s",""); //to avoid spaces
+		double  coef = 1;
+		int pow = 0;
+		Monom ans = new Monom();
+		if(s.contains("x")) {
+			int ind = s.indexOf("x");
+			String co = s.substring(0, ind);
+			if(co.equals("-")) {
+				co = "-1";
 			}
-		}}
+			try{
+				double c = Double.parseDouble(co);
+				coef = c;
+			}
+			catch(Exception e) {
+				coef = 1;
+			}
+			if(s.contains("^")){
+				int powerIndex = s.indexOf("^");
+				String po = s.substring(powerIndex +1);
+				try{
+					int p = Integer.parseInt(po);
+					pow = p;
+				}
+				catch(Exception e) {
+					pow = 1;
+				}
+			}
+			else {
+				pow = 1;
+			}
+		}
+		else {
+			coef = Double.parseDouble(s); //just a  number.
+		}
+		ans = new Monom(coef, pow);	
+		return ans;	
 	}
 
 	/*
 	 * add monom m to this monom only if the powers are equals
 	 */
 	public void add(Monom m) {
-		double coef;
-		if(this._power!=m._power)
-			throw new ArithmeticException("differrent powers");
-		else
-		{
-			if(this._coefficient+ m._coefficient!=0)
-			 m.set_coefficient(this._coefficient+ m._coefficient);
+		if(m.isZero()) {
+			this._coefficient = this._coefficient;
+		}
+		else if(this.isZero()) {
+			this._coefficient = m._coefficient;
+			this._power = m._power;
+		}
+		else{
+			if(m.get_power() == this._power){
+				this._coefficient += m.get_coefficient();
+			}
+			else {
+				throw new IllegalArgumentException("illegal move");
+			}
 		}
 	}
 
@@ -103,8 +140,15 @@ public class Monom implements function{
 	 * multiply monom d with this monom
 	 */
 	public void multipy(Monom d) {
-		d._coefficient=this._coefficient*d._coefficient;
-		d._power=this._power+d._power;
+		if (d.get_coefficient()==0 || this.get_coefficient()==0) {
+			this.set_coefficient(0);
+			this.set_power(0);
+		}
+		else
+		{
+			d._coefficient=this._coefficient*d._coefficient;
+			d._power=this._power+d._power;
+		}
 	}
 
 	/*
@@ -119,6 +163,38 @@ public class Monom implements function{
 		else
 			ans=Double.toString(this._coefficient) + "x^"+Integer.toString(this._power);
 		return ans;
+	}
+	
+	//substruct
+	
+	public void substract(Monom m2){
+		if(m2.isZero()) {
+			this._coefficient = this._coefficient;
+		}
+		else if(this.isZero()) {
+			this._coefficient = m2._coefficient;
+			this._power = m2._power;
+		}
+		else {
+			if(m2.get_power() == this._power){
+				this._coefficient -= m2.get_coefficient();
+			}
+			else {
+				throw new IllegalArgumentException("illegal move");
+			}
+		}
+	}
+	
+	public boolean equals(Monom m) { 
+		if(this._coefficient==m._coefficient && this._power==m._power) {
+			return true;
+		}
+		else if(this._power==m._power) {
+			if(Math.abs(this._coefficient) - Math.abs(m._coefficient) <= EPSILON){
+				return true;
+			}
+		}
+			return false;
 	}
 	// you may (always) add other methods.
 
@@ -141,6 +217,7 @@ public class Monom implements function{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public function copy() {
 		// TODO Auto-generated method stub
