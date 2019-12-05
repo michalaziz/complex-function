@@ -20,4 +20,28 @@ public class Functions_GUI implements function {
 		return null;
 	}
 
+	public function get(int f)
+	{
+		return null;
+	}
+	
+	public int size()
+	{
+		return 0;
+	}
+	
+	public void add(function f)
+	{
+		
+	}
+	public void drawFunctions()
+	{
+		
+	}
+
+	@Override
+	public void drawFunctions(int x, int y, Range rx, Range ry, int res) {
+		// TODO Auto-generated method stub
+		
+	}
 }

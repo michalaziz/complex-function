@@ -6,26 +6,21 @@ public class ComplexFunction implements complex_function {
 	function right;
 	Operation op; 
 
-	public ComplexFunction(function l, function r, Operation o)
+	public ComplexFunction(Operation o, function l, function r)
 	{
+		if(l==null)
+			throw new RuntimeException("no left function");
 		this.left=l;
 		this.right=r;
 		this.op=o;
+	}
+	public ComplexFunction(String o, function l, function r)
+	{
 	}
 	
 	public ComplexFunction(function l)
 	{
 		this.left=l;
-	}
-
-	public function get_left()
-	{
-		return this.left;
-	}
-	
-	public function get_right()
-	{
-		return this.right;
 	}
 	
 	@Override
@@ -43,46 +38,51 @@ public class ComplexFunction implements complex_function {
 
 	@Override
 	public function copy() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public void plus(function f1) {
-		
-		Operation op=Operation.Plus;
-		ComplexFunction temp=new ComplexFunction(this.get_left(),this.get_right(),this.getOp());
-				ComplexFunction ans=new ComplexFunction(temp,f1,op);
+		this.left=this.copy();
+		this.right=f1.copy();
+		this.op=Operation.Plus;
 	}
 
 	@Override
 	public void mul(function f1) {
-		// TODO Auto-generated method stub
-		
+		this.left=this.copy();
+		this.right=f1.copy();
+		this.op=Operation.Times;
 	}
 
 	@Override
 	public void div(function f1) {
-		// TODO Auto-generated method stub
-		
+		this.left=this.copy();
+		this.right=f1.copy();
+		this.op=Operation.Divid;
 	}
 
 	@Override
 	public void max(function f1) {
-		// TODO Auto-generated method stub
-		
+		this.left=this.copy();
+		this.right=f1.copy();
+		this.op=Operation.Max;
 	}
 
 	@Override
 	public void min(function f1) {
-		// TODO Auto-generated method stub
+	this.left=this.copy();
+	this.right=f1.copy();
+	this.op=Operation.Min;
 		
 	}
 
 	@Override
 	public void comp(function f1) {
-		// TODO Auto-generated method stub
-		
+		this.left=this.copy();
+		this.right=f1.copy();
+		this.op=Operation.Comp;
 	}
 
 	@Override
@@ -99,9 +99,18 @@ public class ComplexFunction implements complex_function {
 
 	@Override
 	public Operation getOp() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.op;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "";
+	}
+	
+	
+	
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
