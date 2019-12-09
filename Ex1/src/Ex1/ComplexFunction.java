@@ -14,7 +14,7 @@ public class ComplexFunction implements complex_function {
 		this.left=null;
 		this.right=null;
 	}
-	
+
 	//string ctor
 	public ComplexFunction(String o, function l, function r)
 	{
@@ -63,7 +63,7 @@ public class ComplexFunction implements complex_function {
 			if(this.left()==null)
 				return this.right.f(x);
 			if(this.right()==null)
-				return this.right.f(x);
+				return this.left.f(x);
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + o);
 		}
@@ -132,8 +132,6 @@ public class ComplexFunction implements complex_function {
 
 	@Override
 	public function right() {
-		if(this.right==null)
-			throw new RuntimeException("ERR: no function");
 		return this.right;
 	}
 
@@ -142,7 +140,7 @@ public class ComplexFunction implements complex_function {
 		return this.op;
 	}
 
-	
+
 	//convert the string to operator
 	private Operation stringToOp(String s)
 	{
@@ -214,8 +212,21 @@ public class ComplexFunction implements complex_function {
 			break;	
 		}
 		return this.getOp()+"("+this.left()+","+this.right()+")";
-		
+
 	}
+	public boolean equals(Object obj) {
+
+		ComplexFunction F= new ComplexFunction((function) obj);
+		int x=-50; 
+		while(x<=50)
+		{
+			if(this.f(x)!=F.f(x))
+				return false;
+			x++;
+		}
+		return true;
+	}
+
 
 
 
@@ -231,7 +242,12 @@ public class ComplexFunction implements complex_function {
 		ComplexFunction cf3 = new ComplexFunction(p3);
 		cf3.plus(p2);
 		System.out.println(cf3.left);
-
+		System.out.println(cf3.right);
+		System.out.println(cf3.f(2));
+		System.out.println(cf3.equals(p2));
+		Polynom p4 = new Polynom("x+1");
+		Polynom p5 = new Polynom("1+x");
+		System.out.println(p4.equals(p5));
 	}
 
 
