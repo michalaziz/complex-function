@@ -1,36 +1,72 @@
 package Ex1;
 
+import java.nio.file.OpenOption;
+
 public class ComplexFunction implements complex_function {
 
 	function left;
 	function right;
 	Operation op=Operation.None;
 
+	//Default ctor
 	public ComplexFunction()
 	{
 		this.left=null;
 		this.right=null;
 	}
+	
+	//string ctor
 	public ComplexFunction(String o, function l, function r)
 	{
 		this.left=l;
 		this.right=r;
 		this.op=stringToOp(o);
 	}
-	
+
+	//operator ctor
+	public ComplexFunction(Operation o, function l, function r)
+	{
+		this.left=l;
+		this.right=r;
+		this.op=o;
+	}
+
+	//no right fuction ctor
 	public ComplexFunction(function l)
 	{
 		this.left=l;
 		this.right=null;
 		this.op=Operation.None;
 	}
-	
+
 	@Override
-	public double f(double x) {
-		//נדריך את הפונקציה לאיזה מהפונקציות של פולינום ומונום ללכת כדי לחשב את  של הפונקציה המורכבת(F) 
-		
-		
-		return 0;
+	public double f(double x) { 
+		Operation o= this.op;
+		switch (o) {
+		case Plus:
+			return this.left.f(x) + this.right.f(x);
+		case Times:
+			return this.left.f(x) * this.right.f(x);
+		case Divid:
+			return this.left.f(x) / this.right.f(x);
+		case Max:
+			if(this.left.f(x) > this.right.f(x))
+				return this.left.f(x);
+			else 
+				return this.right.f(x);
+		case Min:
+			if(this.left.f(x) > this.right.f(x))
+				return this.right.f(x);
+			else 
+				return this.left.f(x);
+		case None:
+			if(this.left()==null)
+				return this.right.f(x);
+			if(this.right()==null)
+				return this.right.f(x);
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + o);
+		}
 	}
 
 	@Override
@@ -43,7 +79,7 @@ public class ComplexFunction implements complex_function {
 	public function copy() {
 		if(right==null)
 			return new ComplexFunction(this.left);
-		return new ComplexFunction(opToString(this.op),this.left, this.right());
+		return new ComplexFunction(this.op.toString(),this.left, this.right());
 	}
 
 	@Override
@@ -76,10 +112,10 @@ public class ComplexFunction implements complex_function {
 
 	@Override
 	public void min(function f1) {
-	this.left=this.copy();
-	this.right=f1;
-	this.op=Operation.Min;
-		
+		this.left=this.copy();
+		this.right=f1;
+		this.op=Operation.Min;
+
 	}
 
 	@Override
@@ -105,28 +141,85 @@ public class ComplexFunction implements complex_function {
 	public Operation getOp() {
 		return this.op;
 	}
+
 	
+	//convert the string to operator
 	private Operation stringToOp(String s)
 	{
-		//מקבלת אופרטור והופכת אותו לסטרינג כדי להכניס למופע חדש של CF switch 
-		return null;
+		Operation o=null;
+		s=s.toLowerCase();
+		try {
+			switch (s) {
+			case "plus":
+				o=o.Plus;
+				break;
+			case"times":
+				o=o.Times;
+				break;
+			case"mul":
+				o=o.Times;
+				break;
+			case"div":
+				o=o.Divid;
+				break;
+			case"divid":
+				o=o.Divid;
+				break;
+			case"max":
+				o=o.Max;
+				break;
+			case"min":
+				o=o.Min;
+				break;
+			case"comp":
+				o=o.Comp;
+			case"none":
+				o=o.None;
+				break;
+			}
+			if(o==null)
+			{
+				throw new Exception("no operator");
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return o;
 	}
-	private String opToString(Operation o)
-	{
-		//מקבלת סטריניג של אופרטורו והופכת אוטו לאופרטור עם switch 
-		return "";
-	}
-	
+
 	@Override
 	public String toString()
 	{
-		//פונקצית הדפסה 
-		return "";
+		Operation o=this.getOp();
+		if(right==null)
+			return left.toString();
+		switch (o) {
+		case Plus:
+			return"("+"("+ this.left()+")"+"+" + "("+this.right()+")"+")";
+		case Times:
+			return"("+"("+ this.left()+")"+ "*" + "("+this.right()+")"+")"; 
+		case Divid:
+			return"("+"("+ this.left()+")"+ "/" + "("+this.right()+")"+")";
+		case Max:
+			return "Max"+"("+this.left()+","+this.right()+")";
+		case Min:
+			return "Min"+"("+this.left()+","+this.right()+")";
+		case Comp:
+			return "Comp("+this.left()+","+this.right()+")";
+		case None:
+			if(right==null)
+				return "("+this.left()+")";
+			break;	
+		}
+		return this.getOp()+"("+this.left()+","+this.right()+")";
+		
 	}
-	
-	
-	
-	
+
+
+
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		String s1 = "3.1 +2.4x^2 -x^4";
@@ -140,6 +233,6 @@ public class ComplexFunction implements complex_function {
 		System.out.println(cf3.left);
 
 	}
-	
+
 
 }
