@@ -59,19 +59,22 @@ public class ComplexFunction implements complex_function {
 				return this.right.f(x);
 			else 
 				return this.left.f(x);
+		case Comp:
+			return this.left.f(this.right.f(x));
 		case None:
 			if(this.left()==null)
 				return this.right.f(x);
 			if(this.right()==null)
 				return this.left.f(x);
 		default:
-			throw new IllegalArgumentException("Unexpected value: " + o);
+			throw new IllegalArgumentException("Unknown operation: " + o);
 		}
 	}
 
 	@Override
 	public function initFromString(String s) {
-		// TODO Auto-generated method stub
+		
+		
 		return null;
 	}
 
