@@ -1,5 +1,6 @@
 package Ex1;
 
+///////
 import java.awt.Color;
 import java.awt.Font;
 import java.io.BufferedReader;
@@ -11,195 +12,179 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.function.Function;
-
-//import com.google.gson.Gson;
-
-
+import Ex1.StdDraw;
+import com.google.gson.Gson;
 
 public class Functions_GUI implements functions{
-	private ArrayList<function> function_List = new ArrayList<function>();
-
-
-	public static Color[] Colors = {Color.blue, Color.cyan, Color.MAGENTA, Color.ORANGE, 
-			Color.red, Color.GREEN, Color.PINK};
+	private ArrayList<function> Funcs = new ArrayList<function>();
 
 	@Override
 	public int size() {
-		return function_List.size();
+		return Funcs.size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return function_List.isEmpty();
+		return Funcs.isEmpty();
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		return function_List.contains(o);
+		return Funcs.contains(o);
 	}
 
 	@Override
 	public Iterator<function> iterator() {
-		return function_List.iterator();
+		return Funcs.iterator();
 	}
 
 	@Override
 	public Object[] toArray() {
-		return function_List.toArray();
+		return Funcs.toArray();
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		return function_List.toArray(a);
+		return Funcs.toArray(a);
 	}
 
 	@Override
 	public boolean add(function e) {
-		return function_List.add(e);
+		return Funcs.add(e);
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		return function_List.remove(o);
+		return Funcs.remove(o);
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return function_List.containsAll(c);
+		return Funcs.containsAll(c);
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends function> c) {
-		return function_List.addAll(c);
+		return Funcs.addAll(c);
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		return function_List.removeAll(c);
+		return Funcs.removeAll(c);
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		return function_List.retainAll(c);
+		return Funcs.retainAll(c);
 	}
 
 	@Override
-	public void clear() {
-		function_List.clear();
+	public void clear() {}
 
-	}
-	/**
-	 * This method creating a new lost of functions from a given file, containing functions.
-	 */
 	@Override
 	public void initFromFile(String file) throws IOException {
-		function f =  new ComplexFunction(new Monom(Monom.ZERO));
-		String line ="";
-
+		ComplexFunction newF= new ComplexFunction(new Monom(Monom.ZERO));
+		String line="";
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(file));
-
-			while ((line = br.readLine()) != null) {
-				function_List.add(((function) f).initFromString(line));
-			}
-		}
-		catch(IOException e){
+			BufferedReader reader =new BufferedReader(new FileReader(file));
+			while((line=reader.readLine())!=null)
+				Funcs.add((function)newF.initFromString(line));
+		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}	
 	}
-	/**
-	 * This method converting the list of functions to a new file.
-	 */
+
 	@Override
 	public void saveToFile(String file) throws IOException {
-
 		try {
-			PrintWriter pw = new PrintWriter(new File(file));
-			StringBuilder sb = new StringBuilder();
-
-			Iterator<function> it = function_List.iterator();
-			while(it.hasNext()) {
-
-				sb.append(it.next().toString()+"\n");
+			Iterator<function> iter = Funcs.iterator();
+			PrintWriter writer=new PrintWriter(file);
+			while(iter.hasNext())
+			{
+				writer.write(iter.next().toString());
+				writer.write("/n");
 			}
-			pw.write(sb.toString());
-			pw.close();
-		}
-		catch(IOException e) {
+			writer.close();
+		}catch(IOException e)
+		{
 			e.printStackTrace();
 			return;
 		}
 	}
-	
-	/**
-	 * This method get the drawing params and drawing a function list on a canvas by them.
-	 */
+	public static Color[] Colors = {Color.blue, Color.cyan, Color.MAGENTA, Color.ORANGE,
+			Color.red, Color.GREEN, Color.PINK};
+
 	@Override
 	public void drawFunctions(int width, int height, Range rx, Range ry, int resolution) {
-
-		// rescale the coordinate system
-		StdDraw.setCanvasSize(width, height);
+		StdDraw.setCanvasSize(width,height);
 		StdDraw.setXscale(rx.get_min(), rx.get_max());
-		StdDraw.setYscale(ry.get_min(), ry.get_max());
+		StdDraw.setXscale(ry.get_min(), ry.get_max());
+		StdDraw.setPenColor(StdDraw.BLACK);
 
-		StdDraw.setPenColor(Color.LIGHT_GRAY);
-		StdDraw.setFont(new Font("Arial", Font.BOLD, 15));
-		//horizon lines
-		for(double i= ry.get_min(); i<=ry.get_max();i++) {
-			StdDraw.line(rx.get_min(), i, rx.get_max(), i);
+		for(double i=ry.get_min(); i<ry.get_max();i++)
+		{
+			StdDraw.line(rx.get_min(),i, rx.get_max(),i);
 			StdDraw.text(0.2,i+0.2,i+""); 
 		}
-		//vertical lines
-		for(double j=rx.get_min(); j<=rx.get_max(); j++) {
-			StdDraw.line(j, ry.get_min(), j, ry.get_max());
-			StdDraw.text(j+0.2,0.2,j+""); 
+
+		for(double i=rx.get_min(); i<rx.get_max(); i++)
+		{
+			StdDraw.line(i,ry.get_min(), i, ry.get_max());
+			StdDraw.text(i+0.2,0.2,i+""); 
+
 		}
-
-		//Drawing the base lines.	
+		//set the pen color and radios
 		StdDraw.setPenColor(Color.BLACK);
-		StdDraw.setPenRadius(0.005);
-		// x line.
-		StdDraw.line(rx.get_min(),0, rx.get_max(), 0);
-		//y line.
-		StdDraw.line(0, ry.get_min(), 0, ry.get_max());
-
-		double step = (Math.abs(rx.get_min())+Math.abs(rx.get_max()))/resolution;
-		for(int i=0; i<this.function_List.size();i++) {
+		StdDraw.setPenRadius(0.006);
+		//X axis drawing 
+		StdDraw.line(rx.get_min(), 0, rx.get_max(), 0);
+		//y axis drawing
+		StdDraw.line(0,ry.get_min(),0, ry.get_max());
+		double step=(rx.get_max()-rx.get_min())/resolution;
+		Double fx=null;
+		for(int i=0; i<this.Funcs.size();i++) 
+		{
 			StdDraw.setPenColor(Colors[i%Colors.length]);
-			for(double j =rx.get_min(); j< rx.get_max(); j=j+step) {
-				StdDraw.line(j, function_List.get(i).f(j), j+step, function_List.get(i).f(j+step));
+			try {
+				fx=Funcs.get(i).f(rx.get_min());
+			}
+			catch(Exception e)
+			{
+				fx=null;
+			}
+			for(double j=rx.get_min(); j<rx.get_max(); j+=step)
+				if(fx!=null)
+					StdDraw.line(j, fx, j+step, Funcs.get(i).f(j+step));
+			{
+
 			}
 		}
 	}
 
-
-
-
-
-/**
- * This method extracting parameters from json file and send them to the drawFunction function.
- */
-
-
 	@Override
 	public void drawFunctions(String json_file) {
-//		Gson gson = new Gson();
-//		try 
-//		{
-//			
-//			FileReader reader = new FileReader(json_file);
-//			params params = gson.fromJson(reader,params.class);
-//			
-//			Range rx = new Range(params.Range_X[0],params.Range_X[1]);
-//			Range ry = new Range(params.Range_Y[0],params.Range_Y[1]);
-//			drawFunctions(params.Width, params.Height, rx, ry, params.Resolution);
-//			
-//		} 
-//		catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//	
-	}
+		Gson gson= new Gson();
+		GUI_params parameters;
+		try {
+			FileReader reader = new FileReader(json_file);
+			parameters = gson.fromJson(reader, GUI_params.class);
+		}catch(FileNotFoundException e)
+		{
+			parameters=new GUI_params();
+		}
+		Range rx = new Range(parameters.Range_X[0],parameters.Range_X[1]);
+		Range ry = new Range(parameters.Range_Y[0],parameters.Range_Y[1]);
+		drawFunctions(parameters.Width, parameters.Height, rx, ry, parameters.Resolution);
 
+	}
+	private class GUI_params{
+		int Width = 1000;
+		int Height = 600;
+		double[] Range_X = {-10, 10};
+		double[] Range_Y = {-10, 10};
+		int Resolution = 200;
+
+	}
 }

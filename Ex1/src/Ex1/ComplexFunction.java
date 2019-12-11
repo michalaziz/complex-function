@@ -73,8 +73,6 @@ public class ComplexFunction implements complex_function {
 
 	@Override
 	public function initFromString(String s) {
-		
-		
 		return null;
 	}
 
