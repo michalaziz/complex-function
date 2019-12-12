@@ -1,8 +1,10 @@
 package Ex1;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import javax.swing.Spring;
 
@@ -17,7 +19,8 @@ import Ex1.Monom;
  *
  */
 public class Polynom implements Polynom_able{
-	private ArrayList<Monom>  _Polynom;
+	public ArrayList<Monom> _Polynom = new ArrayList<Monom>();
+	private Monom_Comperator cmp = new Monom_Comperator();
 
 	/**
 	 * Zero (empty polynom)
@@ -34,55 +37,10 @@ public class Polynom implements Polynom_able{
 	 * convert 
 	 */
 	public Polynom(String s) {
-		{	
-			Polynom S_ToPolynom=new Polynom();
-			String StrLower=s.toLowerCase();
-			String plusMin="";
-			for (int i = 0; i < s.length(); i++) {
-				if(s.charAt(i)=='+'||s.charAt(i)=='-')
-				{
-					plusMin+=s.charAt(i);
-				}
-			}
-			if(s.charAt(0)!='-') plusMin="+"+plusMin;
-			String[] SplitToMonom=StrLower.split("\\+|\\-");
-			if(plusMin.charAt(0)=='-')
-			{
-			for (int i = 1; i < SplitToMonom.length; i++) {
-
-				if(plusMin.charAt(i-1)=='-')
-				{
-					Monom Temp=new Monom(SplitToMonom[i]);
-					Monom Minos=new Monom ("-1");
-					Temp.multipy(Minos);
-					S_ToPolynom.add(Temp);
-				}	
-				else 
-				{
-					Monom Temp=new Monom(SplitToMonom[i]);
-					S_ToPolynom.add(Temp);
-				}
-			}
-			}else if(plusMin.charAt(0)=='+')
-			{
-				for (int i = 0; i < SplitToMonom.length; i++) {
-
-					if(plusMin.charAt(i)=='-')
-					{
-						Monom Temp=new Monom(SplitToMonom[i]);
-						Monom Minos=new Monom ("-1");
-						Temp.multipy(Minos);
-						S_ToPolynom.add(Temp);
-					}	
-					else 
-					{
-						Monom Temp=new Monom(SplitToMonom[i]);
-						S_ToPolynom.add(Temp);
-					}
-				}
-			}
-			this._Polynom=((Polynom) S_ToPolynom.copy())._Polynom;
-		}
+		s = s.replaceAll(" ", "");
+		String[] monoms = s.split("(?=[-,+])");
+		for (int i = 0; i < monoms.length; i++) 
+			this.add(new Monom(monoms[i]));
 	}
 	@Override
 	public double f(double x) {
@@ -105,70 +63,71 @@ public class Polynom implements Polynom_able{
 	}
 
 	@Override
-	public void add(Monom m1) 
-	{
-		boolean isAdd=false;
-		Iterator<Monom> iter=this.iteretor();
-		while(iter.hasNext())
-		{
-			Monom temp= iter.next();
-			if(temp.get_power()==m1.get_power())
-			{
-				temp.add(m1);
-				isAdd=true;
-			}
-		}
-		if(isAdd==false)
-			_Polynom.add(m1);
-		Monom_Comperator cmpByPower=new Monom_Comperator();
-		this._Polynom.sort(cmpByPower);
-	}
+	public void add(Monom m1) {
+		//add a monom to a polynom.
 
+		for(int i=0 ; i < this._Polynom.size();i++) {
+			if(_Polynom.get(i).get_power() == m1.get_power()) {
+				Monom m2=new Monom(this._Polynom.get(i));
+				m2.add(m1);
+				this._Polynom.set(i,m2);
+				return;
+			}
+
+		}
+
+		_Polynom.add(m1);
+		this._Polynom.sort(cmp);
+		return;
+
+	}
 	@Override
 	public void substract(Polynom_able p1) {
 		Iterator<Monom> iter=p1.iteretor();
 		while(iter.hasNext())
 		{
-			Monom a=iter.next();
-			Monom temp = new Monom(a.get_coefficient()*-1,a.get_power());
-			this.add(temp);
+			Monom m2=iter.next();
+			Monom temp = new Monom(m2.get_coefficient()*-1,m2.get_power());
+			add(temp);
 		}
-		Monom_Comperator cmpByPower=new Monom_Comperator();
-		this._Polynom.sort(cmpByPower);
+		//		Monom_Comperator cmpByPower=new Monom_Comperator();
+		//		this._Polynom.sort(cmpByPower);
 
 	}
 
 	@Override
-	public void multiply(Polynom_able p1) { 
-
-		Iterator<Monom> iter1=this.iteretor();
-		Iterator<Monom> iter2=p1.iteretor();
-		Polynom poly= new Polynom();
-		Monom temp1, temp2;
-		while(iter1.hasNext())
+	public void multiply(Polynom_able p1) 
+	{
+		Iterator<Monom> It=this.iteretor();
+		Polynom temp=new Polynom();
+		while(It.hasNext())
 		{
-			temp1= iter1.next();
-			while(iter2.hasNext())
+			Monom a=It.next();
+			Iterator<Monom> ItP1=p1.iteretor();
+			while(ItP1.hasNext())
 			{
-				temp2 = iter2.next();
-				temp1.multipy(temp2);
-				poly.add(temp1);
+				Monom b=new Monom(a);
+				b.multipy(ItP1.next());
+				temp.add(b);
 			}
-		}
-		this._Polynom=((Polynom) poly.copy())._Polynom;
+		}	
+		this._Polynom=((Polynom) temp.copy())._Polynom;
 	}
 
 
-	public boolean equals(Polynom_able p1) {
-		Iterator<Monom> iter1=this.iteretor();
-		Iterator<Monom> iter2=p1.iteretor();
-		Monom temp1, temp2;
-		while(iter1.hasNext()&&iter2.hasNext())
+	public boolean equals(Polynom_able p1) 
+	{
+		Iterator<Monom> It=this._Polynom.iterator();
+		Iterator<Monom> ItP1=p1.iteretor();
+		if(It.hasNext()&&ItP1.hasNext())
 		{
-			temp1=iter1.next();
-			temp2=iter2.next();
-			if(temp1.get_coefficient()!=temp2.get_coefficient()||temp1.get_power()!=temp2.get_power())
-				return false;
+			while (It.hasNext())
+			{
+				if(!It.next().equals(ItP1.next()))
+				{
+					return false;
+				}
+			}
 		}
 		return true;
 	}
@@ -193,10 +152,6 @@ public class Polynom implements Polynom_able{
 		if(x0>x1)
 		{
 			throw new RuntimeException("ERR: x0 need to be smaller then x1");
-		}
-		if ((f(x0)) * (f(x1)) >= 0) 
-		{ 
-			throw new RuntimeException("ERR: The function does not cut the x-axis");
 		}
 		else
 			while(interval>=eps)
@@ -239,19 +194,45 @@ public class Polynom implements Polynom_able{
 	}
 
 	@Override
-	public double area(double x0, double x1, double eps) {
-		double sum =0.0;
-		if((f(x0)*f(x1))>=0)
-		{
-			throw new RuntimeException("error צריך להיות הפוך");
+	public double area(double x0, double x1, double eps) 
+	{
+		double temp;
+		double sum = 0.0;
+		if(x0>x1) {
+			temp=x0;
+			x0=x1;
+			x1=temp;
 		}
-		if(x1<=x0)
-			return 0;
-		for(double i=x0; i<x1; i+=eps)
+		for (Double i=x0;i<x1;i=i+eps)
 		{
-			sum+=(f(i)+f(i+eps))/2*eps;//squre area formula
+			if(f(i)>=0)
+			{
+				sum+=((f(i)+f(i+eps))/2)*eps;	
+			}
 		}
 		return sum;
+	}
+	/**
+	 * because in the first area function we can't find a negative area,
+	 * we create a new area function that calculate the negative area in the function.
+	 */
+	public double areaNegative(double x0, double x1, double eps) 
+	{
+		double temp;
+		double sum = 0.0;
+		if(x0>x1) {
+			temp=x0;
+			x0=x1;
+			x1=temp;
+		}
+		for (Double i=x0;i<x1;i=i+eps)
+		{
+			if(f(i)<=0)
+			{
+				sum+=((f(i)+f(i+eps))/2)*eps;	
+			}
+		}
+		return Math.abs(sum);
 	}
 
 	@Override
@@ -271,33 +252,27 @@ public class Polynom implements Polynom_able{
 		}
 		this._Polynom=((Polynom) poly.copy())._Polynom;
 	}
-	
-	public String toString()
-	{
-		String str="";
-		Iterator<Monom> It=this.iteretor();
-		while (It.hasNext())
-		{
-			Monom temp=new Monom (It.next());
-			if(It.hasNext()&&temp.get_coefficient()!=0)
-			{
-				str+=temp.toString()+" + " ;
-			}
-			else if(!It.hasNext()&&temp.get_coefficient()!=0)
-			{
-				str+=temp.toString();
-			}
-			else if(!It.hasNext()&&temp.get_coefficient()==0)
-			{
-				str=str.substring(0,str.length()-3);
-			}
+
+	public String toString(){
+		//printing the polynom as a string.
+		String ans = "";
+		Iterator <Monom> i = this.iteretor();
+		while(i.hasNext()) {
+			ans+=i.next().toString();
+			if(i.hasNext()) ans += "+";
 		}
-		return str;
+		ans = ans.replaceAll("\\s", "");
+		ans = ans.replaceAll(Pattern.quote("++"),"+");
+		ans = ans.replaceAll(Pattern.quote("++-"),"-");
+		ans = ans.replaceAll(Pattern.quote("+-"),"-");
+		ans = ans.replaceAll(Pattern.quote("--"),"+");
+
+		return ans;
 	}
 	@Override
 	public function initFromString(String s) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Polynom(s);
 	}
+
 
 }
