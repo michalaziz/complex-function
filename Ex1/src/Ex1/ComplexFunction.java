@@ -73,7 +73,48 @@ public class ComplexFunction implements complex_function {
 
 	@Override
 	public function initFromString(String s) {
-		return null;
+		Operation o;
+		s=s.replaceAll(" ", "");
+		if(!s.contains(")") && !s.contains("(")) {
+			Polynom p1= new Polynom(s);
+			function f=new ComplexFunction(p1);
+			return f;
+		}
+		try {
+			o=stringToOp(s.substring(0, s.indexOf('(')));
+		}catch(Exception e)
+		{
+			throw new RuntimeException("Invalid string");
+		}
+		//arr[index,flag]
+		int []arr=find(s.substring(s.indexOf('(')+1));
+		if(arr[1]==0)//flag=false
+			throw new RuntimeException(" ',' not found");
+		function left = initFromString(s.substring(s.indexOf('(')+1, arr[0]));
+		function right = initFromString(s.substring(arr[0]+1, s.length()-1));
+		return new ComplexFunction(o, left, right);
+	}
+	
+	//arr[index, flag]
+	public int[] find(String s)
+	{
+		int flag=0,count=0,index=0;
+		int [] arr= {0,0};
+		for(int i=0; i<s.length()-1; i++)
+		{
+			if(s.charAt(i)=='(')
+				count++;
+			if(s.charAt(i)==')')
+				count--;
+			if(s.charAt(i)==','&& count==0)
+			{
+				index=i;
+				flag=1;
+			}
+		}
+		arr[0]=index;
+		arr[1]=flag;
+		return arr;
 	}
 
 	@Override
