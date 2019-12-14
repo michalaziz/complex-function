@@ -73,38 +73,36 @@ public class Monom implements function{
 	public Monom(String s) { 
 		s = s.toLowerCase();
 		if(s.indexOf('x') != s.lastIndexOf('x'))
-			throw new RuntimeException("'" + s + "' isn't a polynom and is"
-					+ " an invalid coefficient");
+			throw new RuntimeException("not polynom");
 		//find coefficient
-		double c;
+		double coef;
 		if(!s.contains("x"))
-			c = parseDouble(s);	
+			coef = parseDouble(s);	
 		else if(s.indexOf("x") == 0)
-			c = 1;
+			coef = 1;
 		else if(s.indexOf('x') == 1) {
 			if(s.charAt(0) == '-')
-				c = -1;
+				coef = -1;
 			else if(s.charAt(0) == '+')
-				c = 1;
+				coef = 1;
 			else 
-				c = parseDouble(s.substring(0, s.indexOf('x')));
+				coef = parseDouble(s.substring(0, s.indexOf('x')));
 		} else 
-			c = parseDouble(s.substring(0, s.indexOf('x')));
+			coef = parseDouble(s.substring(0, s.indexOf('x')));
 
 		// find power
-		int p;
+		int pow;
 		if(!s.contains("x"))
-			p = 0;
+			pow = 0;
 		else if(!s.contains("^")) {
 			if(s.indexOf('x') != s.length()-1)
-				throw new RuntimeException("'" +s + "' isn't a polynom and is"
-						+ " an invalid coefficient");
-			p = 1;
+				throw new RuntimeException("not polynom");
+			pow = 1;
 		}else
-			p = parseInt(s.substring(s.indexOf('x')+2));
+			pow = parseInt(s.substring(s.indexOf('x')+2));
 		// set coefficient and power
-		this.set_coefficient(c);
-		this.set_power(p);
+		this.set_coefficient(coef);
+		this.set_power(pow);
 	}
 
 
@@ -116,8 +114,8 @@ public class Monom implements function{
 		try {
 			return Integer.parseInt(s);
 		} catch (Exception e) {
-			throw new RuntimeException("'" +s + "' isn't a integer number and is"
-					+ " an invalid power");		
+			throw new RuntimeException("is not int");
+	
 		}
 	}
 

@@ -85,12 +85,12 @@ public class Functions_GUI implements functions{
 
 	@Override
 	public void initFromFile(String file) throws IOException {
-		ComplexFunction newF= new ComplexFunction(new Monom(Monom.ZERO));
-		String line="";
+		function newF= new ComplexFunction(new Monom(Monom.ZERO));
+		String line=""; 
 		try {
 			BufferedReader reader =new BufferedReader(new FileReader(file));
 			while((line=reader.readLine())!=null)
-				Funcs.add((function)newF.initFromString(line));
+				Funcs.add(((function)newF).initFromString(line));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -104,7 +104,7 @@ public class Functions_GUI implements functions{
 			while(iter.hasNext())
 			{
 				writer.write(iter.next().toString());
-				writer.write("/n");
+				writer.write("\n");
 			}
 			writer.close();
 		}catch(IOException e)
@@ -120,7 +120,7 @@ public class Functions_GUI implements functions{
 	public void drawFunctions(int width, int height, Range rx, Range ry, int resolution) {
 		StdDraw.setCanvasSize(width,height);
 		StdDraw.setXscale(rx.get_min(), rx.get_max());
-		StdDraw.setXscale(ry.get_min(), ry.get_max());
+		StdDraw.setYscale(ry.get_min(), ry.get_max());
 		StdDraw.setPenColor(StdDraw.BLACK);
 
 		for(double i=ry.get_min(); i<ry.get_max();i++)
@@ -137,26 +137,17 @@ public class Functions_GUI implements functions{
 		}
 		//set the pen color and radios
 		StdDraw.setPenColor(Color.BLACK);
-		StdDraw.setPenRadius(0.006);
+		StdDraw.setPenRadius(0.005);
 		//X axis drawing 
 		StdDraw.line(rx.get_min(), 0, rx.get_max(), 0);
 		//y axis drawing
 		StdDraw.line(0,ry.get_min(),0, ry.get_max());
-		double step=(rx.get_max()-rx.get_min())/resolution;
-		Double fx=null;
+		double step=(Math.abs(rx.get_min())+Math.abs(rx.get_max()))/resolution;
 		for(int i=0; i<this.Funcs.size();i++) 
 		{
 			StdDraw.setPenColor(Colors[i%Colors.length]);
-			try {
-				fx=Funcs.get(i).f(rx.get_min());
-			}
-			catch(Exception e)
-			{
-				fx=null;
-			}
-			for(double j=rx.get_min(); j<rx.get_max(); j+=step)
-				if(fx!=null)
-					StdDraw.line(j, fx, j+step, Funcs.get(i).f(j+step));
+			for(double j=rx.get_min(); j<rx.get_max(); j=j+step)
+					StdDraw.line(j, Funcs.get(i).f(j), j+step, Funcs.get(i).f(j+step));
 			{
 
 			}
@@ -170,14 +161,14 @@ public class Functions_GUI implements functions{
 		try {
 			FileReader reader = new FileReader(json_file);
 			parameters = gson.fromJson(reader, GUI_params.class);
+
+		Range rx = new Range(parameters.Range_X[0],parameters.Range_X[1]);
+		Range ry = new Range(parameters.Range_Y[0],parameters.Range_Y[1]);
+		drawFunctions(parameters.Width, parameters.Height, rx, ry, parameters.Resolution);
 		}catch(FileNotFoundException e)
 		{
 			parameters=new GUI_params();
 		}
-		Range rx = new Range(parameters.Range_X[0],parameters.Range_X[1]);
-		Range ry = new Range(parameters.Range_Y[0],parameters.Range_Y[1]);
-		drawFunctions(parameters.Width, parameters.Height, rx, ry, parameters.Resolution);
-
 	}
 	private class GUI_params{
 		int Width = 1000;
@@ -186,5 +177,10 @@ public class Functions_GUI implements functions{
 		double[] Range_Y = {-10, 10};
 		int Resolution = 200;
 
+	}
+	
+	public static void main(String[] args)
+	{
+		
 	}
 }

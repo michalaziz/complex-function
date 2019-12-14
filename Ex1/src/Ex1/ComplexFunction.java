@@ -87,20 +87,20 @@ public class ComplexFunction implements complex_function {
 			throw new RuntimeException("Invalid string");
 		}
 		//arr[index,flag]
-		int []arr=find(s.substring(s.indexOf('(')+1));
+		int []arr=find(s);
 		if(arr[1]==0)//flag=false
 			throw new RuntimeException(" ',' not found");
 		function left = initFromString(s.substring(s.indexOf('(')+1, arr[0]));
 		function right = initFromString(s.substring(arr[0]+1, s.length()-1));
 		return new ComplexFunction(o, left, right);
 	}
-	
+
 	//arr[index, flag]
 	public int[] find(String s)
 	{
 		int flag=0,count=0,index=0;
 		int [] arr= {0,0};
-		for(int i=0; i<s.length()-1; i++)
+		for(int i = s.indexOf('(')+1; i<s.length()-1; i++)
 		{
 			if(s.charAt(i)=='(')
 				count++;
@@ -188,7 +188,6 @@ public class ComplexFunction implements complex_function {
 	{
 		Operation o=null;
 		s=s.toLowerCase();
-		try {
 			switch (s) {
 			case "plus":
 				o=o.Plus;
@@ -216,81 +215,75 @@ public class ComplexFunction implements complex_function {
 			case"none":
 				o=o.None;
 				break;
+			default:
+				throw new RuntimeException(" unknown Operation");
 			}
-			if(o==null)
-			{
-				throw new Exception("no operator");
-			}
+			return o;
 		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return o;
-	}
 
-	@Override
-	public String toString()
-	{
-		Operation o=this.getOp();
-		if(right==null)
-			return left.toString();
-		switch (o) {
-		case Plus:
-			return"("+"("+ this.left()+")"+"+" + "("+this.right()+")"+")";
-		case Times:
-			return"("+"("+ this.left()+")"+ "*" + "("+this.right()+")"+")"; 
-		case Divid:
-			return"("+"("+ this.left()+")"+ "/" + "("+this.right()+")"+")";
-		case Max:
-			return "Max"+"("+this.left()+","+this.right()+")";
-		case Min:
-			return "Min"+"("+this.left()+","+this.right()+")";
-		case Comp:
-			return "Comp("+this.left()+","+this.right()+")";
-		case None:
+		@Override
+		public String toString()
+		{
+			Operation o=this.getOp();
 			if(right==null)
-				return "("+this.left()+")";
-			break;	
+				return left.toString();
+			switch (o) {
+			case Plus:
+				return  "Plus(" + left() + "," + right() + ")";
+			case Times:
+				return  "mul(" + left() + "," + right() + ")"; 
+			case Divid:
+				return "divid(" + left() + "," + right() + ")";
+			case Max:
+				return  "Max(" + left() + "," + right() + ")";
+			case Min:
+				return  "Min(" + left() + "," + right() + ")";
+			case Comp:
+				return  "Comp(" + left() + "," + right() + ")";
+			case None:
+				if(right==null)
+					return "("+this.left()+")";
+				break;	
+			}
+			return this.getOp()+"("+this.left()+","+this.right()+")";
+
 		}
-		return this.getOp()+"("+this.left()+","+this.right()+")";
+		public boolean equals(Object obj) {
 
-	}
-	public boolean equals(Object obj) {
-
-		ComplexFunction F= new ComplexFunction((function) obj);
-		int x=-50; 
-		while(x<=50)
-		{
-			if(this.f(x)!=F.f(x))
-				return false;
-			x++;
+			ComplexFunction F= new ComplexFunction((function) obj);
+			int x=-50; 
+			while(x<=50)
+			{
+				if(this.f(x)!=F.f(x))
+					return false;
+				x++;
+			}
+			return true;
 		}
-		return true;
+
+
+
+
+
+		public static void main(String[] args) {
+			// TODO Auto-generated method stub
+			// TODO Auto-generated method stub
+			String s1 = "3.1 +2.4x^2 -x^4";
+			String s2 = "5 +2x -3.3x +0.1x^5";
+			String[] s3 = {"x +3","x -2", "x -4"};
+			Polynom p1 = new Polynom(s1);
+			Polynom p2 = new Polynom("8x");
+			Polynom p3 = new Polynom(s3[0]);
+			ComplexFunction cf3 = new ComplexFunction(p3);
+			cf3.plus(p2);
+			System.out.println(cf3.left);
+			System.out.println(cf3.right);
+			System.out.println(cf3.f(2));
+			System.out.println(cf3.equals(p2));
+			Polynom p4 = new Polynom("x+1");
+			Polynom p5 = new Polynom("1+x");
+			System.out.println(p4.equals(p5));
+		}
+
+
 	}
-
-
-
-
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		String s1 = "3.1 +2.4x^2 -x^4";
-		String s2 = "5 +2x -3.3x +0.1x^5";
-		String[] s3 = {"x +3","x -2", "x -4"};
-		Polynom p1 = new Polynom(s1);
-		Polynom p2 = new Polynom("8x");
-		Polynom p3 = new Polynom(s3[0]);
-		ComplexFunction cf3 = new ComplexFunction(p3);
-		cf3.plus(p2);
-		System.out.println(cf3.left);
-		System.out.println(cf3.right);
-		System.out.println(cf3.f(2));
-		System.out.println(cf3.equals(p2));
-		Polynom p4 = new Polynom("x+1");
-		Polynom p5 = new Polynom("1+x");
-		System.out.println(p4.equals(p5));
-	}
-
-
-}
